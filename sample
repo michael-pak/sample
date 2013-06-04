@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<link rel="stylesheet" type="text/css" href="CSS/stylesheet.css"  />
+<link rel="stylesheet" type="text/css" href="CSS/jquery-ui-1.10.2.custom.css" />
+<script type="text/javascript" src="JavaScript/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="JavaScript/jquery-ui-1.10.2.custom.js"></script>
+<script type="text/javascript">
+$(function() {
+    $("#txtDateofBirth").datepicker({  	
+			showOn: "button",
+			buttonImage: "Images/calendar.gif",
+			buttonImageOnly: true,					
+			showOtherMonths: true,
+			selectOtherMonths: false,									
+			inline: true, 				
+			firstDay: 1
+		});
+	$(".ui-datepicker-trigger").mouseover(function(){
+		$(this).css("cursor", "pointer");
+	});
+});
+
+function funcLoadStates()
+{
+	var country = $("#ddlCountry option:selected").val();	
+	if(country != 0)
+	{
+		var url = "Business/countriesAndStatesCFC.cfc?method=funcGetStates&returnFormat=JSON";		
+		$.ajax({
+			url: url,
+			dataType: "json",
+			async : true,
+			data: {countryName: country},
+			type: "POST",
+			success: function(data){						
+					$("#ddlState").html('');	
+					$("#ddlState").append("<option value='" + 0 + "'>" + "--SELECT--" + "</option>");			
+					$.map(data.DATA,function(item){
+						$("#ddlState").append('<option value="'+item.STATE_NAME+'">'+item.STATE_NAME+'</option>');
+					});
+				}
+		});
+	}	
+}
+</script>
+</head>
+
+<body>
+<cfset qryGetCountries = createObject("component","Business.countriesAndStatesCFC").funcGetCountries()>
+<cfoutput>
+    <form name="frmAppRegistration" id="frmAppRegistration" action="MainIndex.cfm?page=ApplicantReg" method="post">    
+    <table align="center" width="100%">
+    <h2><font color="##2E7ECF"><u>Registration Form</u></font></h2>
+		<tr>
+			<td align="center">
+				<table>
+					<tr>
+						<td>
+							 <fieldset>
+								 <legend><font color="##2E7ECF"><b>Personal Details</b></font></legend>
+								 <table>
+                                 	<tr>
+                                        <td>
+                                            <label for="Title">Title:</label> 
+                                            <select name="ddlTitle" id="ddlTitle">
+                                             <option value="0">--SELECT--</option>
+                                                <option value="1">Mr.</option>
+                                                <option value="2">Mrs. </option>
+                                                <option value="3">Miss. </option> 
+                                                <option value="4">Ms. </option>
+                                            </select>  
+                                        </td>
+                                        <td>
+                                            <label for="FirstName">First Name *: </label><input type="text" name="txtFirstname" id="txtFirstname" />
+                                        </td>
+                                        <td>
+                                            <label for="MiddleInitial">Middle Name: </label><input type="text" name="txtMiddleName" id="txtMiddleName"/>
+                                        </td>
+                                        <td>
+                                             <label for="LastName">Last Name*: </label><input type="text" name="txtLastName" id="txtLastName" />
+                                        </td>
+                                        <td>
+                                             <label for="Date_of_Birth">Date of Birth *: </label>
+											 <input type="text" name="txtDateofBirth" id="txtDateofBirth" class="txtDateofBirth" />
+                                        </td>
+                                    </tr>
+                                 </table>
+							</fieldset><br />
+                             <fieldset>
+								 <legend><font color="##2E7ECF"><b>Contact Info</b></font></legend>
+								 <table>
+                                 	<tr>
+                                        <td>
+                                            <label for="email">Email *: </label><input type="text" name="txtEmail" id="txtEmail" />
+                                        </td>
+                                        <td>
+                                            <label for="Phone">Phone: </label><input type="text" name="txtPhone" id="txtPhone" />
+                                        </td>
+                                        <td>
+                                             <label for="Fax">Fax: </label><input type="text" name="txtFax" id="txtFax" />
+                                        </td>
+                                      
+                                        <td>
+                                             <label for="Address">Address Line 1*: </label><input type="text" name="txtAddress1" id="txtAddress1" />
+                                        </td>
+                                         <td>
+                	                         <label for="Address2">Address *: </label><input type="text" name="txtAddress2" id="txtAddress2" />
+                                        </td>
+          		                          <td>
+                                                <label for="Country">Country *: </label>
+                                                <select name="ddlCountry" id="ddlCountry" onchange="Javascript:funcLoadStates();">
+                                                <option value="0">--SELECT--</option> 
+                                                <cfloop query="qryGetCountries">
+                                                	<option value="#country_name#" title="#country_name#">#country_name#</option>                                                    
+                                                </cfloop>                           
+                                                </select>
+                                          </td>
+                                           <td>
+                                                <label for="State">State *: </label>
+                                                <select name="ddlState" id="ddlState" style="width:175px">
+                                                	<option value="0">--SELECT--</option>
+                                                </select>
+                                         </td>&nbsp;   
+                                    </tr>                                  
+                                </table>
+							</fieldset><br />
+                             <fieldset>
+								 <legend><font color="##2E7ECF"><b>Account Info</b></font></legend>
+								 <table>
+                                    <tr>
+                                        <td>
+                                             <label for="username">Username *: </label><input type="text" name="txtUsername" id="txtUsername" />
+                                        </td>
+                                    
+                                       <td>
+                                            <label for="pwd">Password *: </label><input type="password" name="txtPassword" id="txtPassword" />
+                                       </td>
+                                    
+                                       <td>
+                                             <label for="confirmpwd">Confirm Password*: </label><input type="password" name="txtConfPassword" id="txtConfPassword" />
+                                        </td>
+                                    </tr>
+                                 </table>
+							</fieldset>                            
+						</td>
+					</tr>                    				
+				</table>
+			</td>
+		</tr>
+        <tr>
+            <td align="center" colspan="2">
+                <input type="submit" name="btnSubmit" id="btnSubmit" value="Submit" />
+                &nbsp;
+                <input type="button" onClick="location.href='MainIndex.cfm?page=login'" name="btnReset" id="btnReset" value="Cancel" />
+            </td>
+        </tr>
+	</table>
+    </form>
+</cfoutput>
+</body>
+</html>
+
+<cfif isDefined('form.btnSubmit')>
+<cfset encPassword = HASH(form.txtPassword,'SHA')>
+    <cfquery name="qryInsertDetails" datasource="#request.DataSourceName#">
+        insert into tbl_Applicant_Registration (Title,First_Name,Middle_Name,Last_Name,Date_Of_Birth,Email_Address,Phone,Fax,Address,State,Country,
+        Zip_Code,Username,Password,id_ins_user,dt_ins,id_mod_user,dt_mod,id_del_user,dt_del,checkstatus)
+        values ('#form.ddlTitle#','#form.txtFirstName#','#form.txtMiddleName#','#form.txtLastName#','#form.txtDateOfBirth#','#form.txtEmail#','#form.txtPhone#','#form.txtFax#','#form.txtAddress1#','#form.txtAddress2#','#form.ddlState#','#form.ddlCountry#',
+        '#form.txtUsername#','#encPassword#',NULL,#CreateODBCDateTime(Now())#,NULL,
+        #CreateODBCDateTime(Now())#,NULL,#CreateODBCDateTime(Now())#,'P')
+    </cfquery>  
+</cfif>
